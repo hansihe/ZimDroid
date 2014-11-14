@@ -1,0 +1,152 @@
+<!--suppress AndroidElementNotAllowed -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:support="http://schemas.android.com/apk/res-auto"
+    xmlns:zim="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <android.support.v7.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        tools:context=".MainActivity"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        android:theme="@style/ZimTheme.Toolbar"/>
+
+    <com.hansihe.zimdroid.app.TransparrentSlidingUpPanelLayout
+        android:id="@+id/sliding_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:panelHeight="48dp"
+        sothree:overlay="true"
+        sothree:shadowHeight="0dp">
+
+        <com.hansihe.zimdroid.app.WikiEdit
+            android:id="@+id/text_edit"
+            android:text="@string/hello_world"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:gravity="top|start"/>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/sliding_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            support:cardElevation="2dp"
+            support:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/fold_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="4">
+
+                    <com.hansihe.zimdroid.app.CheckableImageButton
+                        android:id="@+id/bold_toggle"
+                        style="@style/ZimTheme.CheckableButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        zim:personality="check"
+                        android:contentDescription="Bold"
+                        android:src="@drawable/bold"/>
+                    <com.hansihe.zimdroid.app.CheckableImageButton
+                        android:id="@+id/italic_toggle"
+                        style="@style/ZimTheme.CheckableButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        zim:personality="check"
+                        android:contentDescription="Italic"
+                        android:src="@drawable/italic"/>
+                    <com.hansihe.zimdroid.app.CheckableImageButton
+                        android:id="@+id/underline_toggle"
+                        style="@style/ZimTheme.CheckableButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        zim:personality="check"
+                        android:contentDescription="Mark"
+                        android:src="@drawable/underline"/>
+                    <com.hansihe.zimdroid.app.CheckableImageButton
+                        android:id="@+id/strikethrough_toggle"
+                        style="@style/ZimTheme.CheckableButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        zim:personality="check"
+                        android:contentDescription="Strike"
+                        android:src="@drawable/strikethrough"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/background_material_light"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
+
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="H5"
+                        style="?buttonBarButtonStyle"/>
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="H4"
+                        style="?buttonBarButtonStyle"/>
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="H3"
+                        style="?buttonBarButtonStyle"/>
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="H2"
+                        style="?buttonBarButtonStyle"/>
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="H1"
+                        style="?buttonBarButtonStyle"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/background_material_light"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </com.hansihe.zimdroid.app.TransparrentSlidingUpPanelLayout>
+
+</LinearLayout>

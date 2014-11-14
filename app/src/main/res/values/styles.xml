@@ -1,0 +1,18 @@
+<resources>
+
+    <declare-styleable name="CheckableImageButton">
+        <attr name="is_checked" format="boolean" />
+
+        <attr name="personality">
+            <enum name="radio" value="0" />
+            <enum name="check" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <style name="ZimTheme.CheckableButton">
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:padding">6dp</item>
+        <item name="android:background">@drawable/checkable_button</item>
+    </style>
+
+</resources>

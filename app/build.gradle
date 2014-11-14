@@ -1,0 +1,52 @@
+project.tasks.withType(JavaCompile) { task ->
+    options.compilerArgs << "-AguiceAnnotationDatabasePackageName=com.hansihe.zimdroid.app"
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.13.0'
+    }
+}
+apply plugin: 'com.android.application'
+
+repositories {
+        jcenter()
+}
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.0.2"
+
+    defaultConfig {
+        applicationId "com.hansihe.zimdroid.app"
+        minSdkVersion 19
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+
+        testApplicationId "com.hansihe.zimdroid.app"
+        testInstrumentationRunner "android.text.InstrumentationRunner"
+        testHandleProfiling true
+        testFunctionalTest true
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:21.0.0'
+    compile 'com.android.support:appcompat-v7:21.0.0'
+    compile 'com.android.support:cardview-v7:21.0.0'
+    compile 'com.sothree.slidinguppanel:library:2.0.2'
+    compile 'org.roboguice:roboguice:3.0'
+
+    provided 'org.roboguice:roboblender:3.0'
+}

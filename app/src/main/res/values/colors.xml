@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<color name="primary">#ff2a57ae</color>
+    <color name="primary_dark">#ff264a8c</color>-->
+
+    <color name="primary">#ff264a8c</color>
+    <color name="primary_dark">#ff24407f</color>
+
+    <color name="material_button_highlight">#999999</color>
+</resources>
