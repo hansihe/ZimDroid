@@ -5,5 +5,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_page_view">PageViewActivity</string>
+    <string name="title_activity_greeter">ZimDroid Dev Launcher</string>
+    <string name="greeter_button_edit_test">Start page editing test</string>
 
 </resources>
