@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hansihe.zimdroid.app" >
 
+    <uses-sdk
+        android:minSdkVersion="7"
+        android:targetSdkVersion="22" />
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -30,6 +33,7 @@
         <activity
             android:name="com.hansihe.zimdroid.app.GreeterActivity"
             android:label="@string/title_activity_greeter"
+            android:theme="@style/Theme.AppCompat.Light"
             android:windowSoftInputMode="adjustResize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
