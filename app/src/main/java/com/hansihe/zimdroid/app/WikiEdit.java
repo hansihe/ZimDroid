@@ -42,7 +42,7 @@ public class WikiEdit extends EditText {
         init(context);
     }
 
-    @TargetApi(Build.VERSION_CODES.L)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public WikiEdit(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context);
