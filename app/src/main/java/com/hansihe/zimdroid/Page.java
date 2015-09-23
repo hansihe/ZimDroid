@@ -10,12 +10,24 @@ import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 import java.text.ParsePosition;
 import java.lang.NullPointerException;
+import android.util.log;
 
 class Page {
+    
+    // Error levels specification
+    // STRICT: Fail on unexpected behaviour
+    // READONLY: Unexpected behaviour prevents writing
+    // IGNORE: Unexpected headings are rewritten unmodified, missing headers are added
+    public enum ErrorLevel {
+        STRICT, READONLY, IGNORE
+    }
+    
     private String name;                    // Full page name
     private String path;                    // File path
     private String title;                   // Page title (file name)
     private boolean isNewPage = false;      // Flag for data loading
+    private ErrorLevel policy = ErrorLevel.STRICT
+    private boolean hasErrors = false;
 
     // Page metadata variables
     private String wikiVersion;
@@ -28,11 +40,12 @@ class Page {
     public final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     
     /** Create a new Page based on a Notebook and a page name.
-     * @param nb The notebook the page is in
+     * @param parent The notebook the page is in
      * @param pageName The full page name
+     * @param policy The error handling/compatibility mode
      * @throws IOException
      */
-    public Page(Notebook parent, String pageName) throws IOException {
+    public Page(Notebook parent, String pageName, ErrorLevel policy) throws IOException {
         this.name = pageName;
         this.path = parent.getPageFilename(pageName);
         if (pageName.contains(":")) {
@@ -41,17 +54,30 @@ class Page {
         } else {
             this.title = pageName;
         }
+        this.policy = policy;
         this.loadData();
+    }
+
+   /** Create a new Page based on a Notebook and a page name.
+     * @param parent The notebook the page is in
+     * @param pageName The full page name
+     * @throws IOException
+     */
+    public Page(Notebook parent, String pageName) throws IOException {
+        this.Page(parent, pageName, ErrorLevel.STRICT);
     }
 
     /** Create a new page at a file path.
      * @param path The file path of the page
+     * @param policy The error handling mode to employ
      * @throws IOException
      */
-    public Page(String path) throws IOException {
+    public Page(String path, ErrorLevel policy) throws IOException {
         this.path = path;
         String pageName;
-        assert(path.endsWith(".txt"));
+        if (! path.endsWith(".txt")) {
+            Log.w("Page name did not end in .txt");
+        }
         int sep = path.lastIndexOf(File.separator);
         int dot = path.lastIndexOf(".");
         if (sep < 0) {
@@ -60,6 +86,7 @@ class Page {
             this.name = path.substring(sep + 1, dot);
         }
         this.title = this.name;
+        this.policy = policy;
         this.loadData();
     }
 
@@ -116,6 +143,7 @@ class Page {
     }
 
     /** Returns the contents of the page as a String (headers are excluded).
+     * Returns null if the page does not exist.
      * @throws IOException
      */
     public String read() throws IOException {
@@ -123,8 +151,8 @@ class Page {
         StringBuilder bodyText = new StringBuilder(2000);
         try {
             BufferedReader pageReader = new BufferedReader(new FileReader(path));
-            // Skip the headers (i.e. to the first blank line)
-            String nextLine = "default_value_for_loop";
+            // Consume the headers (i.e. to the first blank line)
+            String nextLine = "nonblank_initial_value_for_loop";
             while (! nextLine.equals("")) {
                 nextLine = pageReader.readLine();
             }
@@ -133,7 +161,7 @@ class Page {
                 bodyText.append(pageReader.readLine() + "\n");
             }
         } catch (FileNotFoundException e) {
-            System.err.println("Tried to read empty file at " + this.path);
+            Log.w("Tried to read nonexistant file at " + this.path);
             return null;
         }
         return bodyText.toString();
@@ -144,6 +172,9 @@ class Page {
      * @throws IOException
      */
     public void write(String bodyText) throws IOException {
+        if (this.policy == ErrorLevel.READONLY && this.hasErrors == true) {
+            return;
+        }
         // Header strings; perhaps these should be constants?
         String contentTypeHeader = "Content-Type: text/x-zim-wiki\n";
         String wikiFormatHeader = "Wiki-Format: ";
@@ -195,8 +226,9 @@ class Page {
                         this.creationDate = formatter.parse(tokens[1], new ParsePosition(0));
                         break;
                     default:
-                        System.err.println("Warning: unrecognised header parsing " + this.path + ": " + tokens[0]);
+                        Log.w("Unrecognised header parsing " + this.path + ": " + tokens[0]);
                         this.extraHeaders.add(nextLine);
+                        this.hasErrors = true;
                         break;
                 }
             }
@@ -208,7 +240,17 @@ class Page {
              *      possible nulls.
              */
             if (this.wikiVersion == null || this.creationDate == null) {
-                throw new IOException("Zim page is missing mandatory headers");
+                if (this.policy == ErrorLevel.STRICT) {
+                    throw new IOException("Zim page is missing mandatory headers");
+                } else {
+                    this.hasErrors = true;
+                    if (this.wikiVersion == null) {
+                        this.wikiVersion = this.DEFAULT_VERSION;
+                    }
+                    if (this.creationDate == null) {
+                        this.creationDate = new Date();
+                    }
+                }
             }
         } catch (FileNotFoundException e) {
             // This means the page is new, so let's set some defaults
@@ -216,8 +258,8 @@ class Page {
             this.creationDate = new Date();
             this.isNewPage = true;
         } catch (NullPointerException e) {
-            System.err.println("Unable to parse date for page at " + this.path);
-            System.err.println("This shouldn't happen unless there is no date value.");
+            Log.e("Unable to parse date for page at " + this.path);
+            Log.e("This shouldn't happen unless there is no date value.");
         }
     }
 }
