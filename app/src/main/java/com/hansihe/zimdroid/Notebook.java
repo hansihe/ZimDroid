@@ -3,12 +3,24 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import android.util.Log;
 
 class Notebook {
+    
+    // Error levels specification
+    // STRICT: Fail on unexpected behaviour
+    // READONLY: Unexpected behaviour prevents writing
+    // IGNORE: Unexpected headings are rewritten unmodified, missing headers are added
+    public enum ErrorLevel {
+        STRICT, READONLY, IGNORE
+    }
+    
     // Logical state variables
     private static String rootPath;     // Path to the notebook folder
     private boolean isNewNotebook = false;
     private boolean dataIsLoaded;       // True when notebook.zim has been parsed
+    private ErrorLevel policy = ErrorLevel.STRICT;
+    private boolean hasErrors = false;
 
     // Notebook metadata variables
     private String name;
@@ -25,14 +37,25 @@ class Notebook {
 
     // Constants
     // public enum newlineStyle = { WINDOWS, UNIX, MAC };
+    private String logTag = "zimdroid notebook";
+
+    /** Creates a new Notebook object located at the path given.
+     * @param root The path of the Zim notebook's root folder
+     * @param policy The behaviour to take when errors are encountered
+     * @throws IOException
+     */
+    public Notebook(String root, ErrorLevel policy) throws IOException {
+        this.rootPath = root;
+        this.policy = policy;
+        this.loadData();
+    }
 
     /** Creates a new Notebook object located at the path given.
      * @param root The path of the Zim notebook's root folder
      * @throws IOException
      */
     public Notebook(String root) throws IOException {
-        this.rootPath = root;
-        this.loadData();
+        this.Notebook(root, ErrorLevel.STRICT);
     }
 
     /** Returns true if the directory exists and is a valid notebook.
@@ -116,6 +139,9 @@ class Notebook {
      * @throws IOException
      */
     public void saveData() throws IOException {
+        if (this.policy == ErrorLevel.STRICT && this.hasErrors) {
+            return;
+        }
         BufferedWriter metadataFile = new BufferedWriter(new Filewriter(this.rootPath + File.separator + "notebook.zim"));
         // Write the identifier
         String sectionHeader = "[Notebook]\n";
@@ -280,12 +306,14 @@ class Notebook {
                             }
                             break;
                         default:
-                            System.err.println("Warning: unknown entry parsing notebook.zim for " + this.rootPath);
+                            Log.w("Warning: unknown entry parsing notebook.zim for " + this.rootPath);
                             this.extraEntries.add(nextLine);
+                            this.hasErrors = true;
                             break;
                     }
                 } else {
-                    System.err.println("Warning: Notebook.zim contains more than simple entries after [Notebook] section.");
+                    Log.w(logTag, "Warning: Notebook.zim contains more than simple entries after [Notebook] section.");
+                    this.hasErrors = true;
                 }
             }
             metadataFile.close();
@@ -322,7 +350,7 @@ class Notebook {
         return pageFilename;
     }
 
-    private String prepateEntry(String base, String value) {
+    private String prepareEntry(String base, String value) {
         if (value==null) {
             return base + "\n";
         } else {
